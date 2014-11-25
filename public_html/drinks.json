@@ -1,0 +1,18 @@
+[
+    {
+        "name": "Cola", 
+        "description": "1l PET",
+        "price": 1.25, 
+        "image": "img/flasche.jpg"
+    },{
+        "name": "Dose", 
+        "description": "355ml",
+        "price": 1.50, 
+        "image": "img/dose.jpg"
+    },{
+        "name": "Wasser", 
+        "description": "1,5l PET",
+        "price": 1.00, 
+        "image": "img/wasser.jpg"
+    }
+]
