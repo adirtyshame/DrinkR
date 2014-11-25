@@ -1,6 +1,7 @@
 function Beverage(data) {
     var self = this;
     self.name = ko.observable((data && data.name) || '');
+    self.description = ko.observable((data && data.description) || '');
     self.price = ko.observable((data && data.price) || 0);
     self.image = ko.observable((data && data.image) || 'img/nopic.jpg');
 }
@@ -8,18 +9,28 @@ function Beverage(data) {
 function Person(data) {
     var self = this;
     self.name = ko.observable((data && data.name) || '');
+    self.mail = ko.observable((data && data.mail) || '');
     self.avatar = ko.observable((data && data.avatar) || 'img/avatar.png');
     self.note = ko.observable((data && data.note) || '');
-    self.cans = ko.observable(0);
-    self.bottles = ko.observable(0);
-    self.addBottle = function () {
-        self.bottles(self.bottles() + 1);
+    self.drinks = ko.observableArray([]);
+    self.count = function(drink) {
+        var sum = 0;
+        self.drinks().forEach(function(element, index, array){
+            if (element === drink) {
+                sum += 1;
+            }
+        });
+        return sum;
     };
-    self.addCan = function () {
-        self.cans(self.cans() + 1);
+    self.addDrink = function (drink) {
+        self.drinks.push(drink);
     };
     self.total = ko.computed(function () {
-        return accounting.formatMoney(self.bottles() * 1.25 + self.cans() * 1.5, "€", 2, ".", ",");
+        var sum = 0;
+        self.drinks().forEach(function (element, index, array) {
+            sum += element.price();
+        });
+        return accounting.formatMoney(sum, "€", 2, ".", ",");
     });
 }
 
@@ -27,15 +38,11 @@ var viewModel = {
     debug: ko.observable(true),
     person: ko.observable(new Person()),
     edit: ko.observable(false),
-    persons: ko.observableArray([new Person({name: 'test1'}), new Person({name: 'test2'})]),
-    beverages: ko.observableArray([new Beverage({name: 'Flasche', price: 1.25, image: 'img/flasche_klein.jpg'}), new Beverage({name: 'Dose', price: 1.50, image: 'img/dose_klein.jpg'})]),
+    persons: ko.observableArray([]),
+    beverages: ko.observableArray([]),
     selectedPerson: ko.observable({}),
     select: function (data) {
-        if (data === this.selectedPerson()) {
-            this.selectedPerson({});
-        } else {
-            this.selectedPerson(data);
-        }
+        this.selectedPerson(data);
     },
     addPerson: function () {
         this.persons.push(new Person(ko.toJS(this.person)));
@@ -50,5 +57,19 @@ var viewModel = {
 };
 
 $(document).ready(function () {
+    $.get('drinks.json').done(function(result){
+        result.forEach(function(element, index, array){
+            viewModel.beverages.push(new Beverage(element));
+        });
+    }).fail(function(){
+        console.log('error loading drinks.json');
+    });
+    $.get('persons.json').done(function(result){
+        result.forEach(function(element, index, array){
+            viewModel.persons.push(new Person(element));
+        });
+    }).fail(function(){
+        console.log('error loading drinks.json');
+    });
     ko.applyBindings(viewModel);
 });

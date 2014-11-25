@@ -8,7 +8,7 @@
         <link href="css/bootstrap-theme.min.css" rel="stylesheet" type="text/css"/>
     </head>
     <body>
-		
+		<!--<span data-bind="text: ko.toJSON(viewModel)"></span>-->
 		<nav class="navbar navbar-default" role="navigation">
 			<div class="container">
 				<div class="navbar-header">
@@ -69,6 +69,10 @@
 								<input type="text" class="form-control" id="name" placeholder="Enter name" data-bind="textInput: person().name" required="">
 							</div>
 							<div class="form-group">
+								<label for="mail">Mail</label>
+								<input type="email" class="form-control" id="mail" placeholder="example@gmail.com" data-bind="textInput: person().mail" required="">
+							</div>
+							<div class="form-group">
 								<label for="note">Note</label>
 								<textarea class="form-control" rows="3" id="note" data-bind="textInput: person().note"></textarea>
 							</div>
@@ -81,12 +85,9 @@
 
 		<script type="text/html" id="popover">
 			<table>
-				<tr>
-					<td data-bind="click: viewModel.selectedPerson().addBottle">
-						<img src="img/flasche.jpg" alt="Flasche" title="Flasche 1L PET 1,25€"><span class="badge" data-bind="text: viewModel.selectedPerson().bottles"></span>
-					</td>
-					<td data-bind="click: viewModel.selectedPerson().addCan">
-						<img src="img/dose.jpg" alt="Dose" title="Dose 1,50€"><span class="badge" data-bind="text: viewModel.selectedPerson().cans"></span>
+				<tr data-bind="foreach: viewModel.beverages">
+					<td data-bind="click: function(){viewModel.selectedPerson().addDrink($data)}">
+						<img data-bind="attr: {src: $data.image, alt: $data.name, title: $data.description}"><span class="badge" data-bind="text: viewModel.selectedPerson().count($data)"></span>
 					</td>
 				</tr>
 			</table>
